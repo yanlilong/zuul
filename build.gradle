@@ -1,9 +1,8 @@
-
 plugins {
     id 'com.netflix.nebula.netflixoss' version '11.0.0'
     id "com.google.osdetector" version "1.7.1"
-    id "me.champeau.jmh" version "0.6.6"
-    id "org.openrewrite.rewrite" version "5.30.0"
+    id "me.champeau.jmh" version "0.6.8"
+    id "org.openrewrite.rewrite" version "5.31.0"
 }
 
 ext.githubProjectName = rootProject.name
@@ -27,10 +26,10 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'nebula.netflixoss'
+    apply plugin: 'com.netflix.nebula.netflixoss'
     apply plugin: 'java'
-    apply plugin: 'nebula.javadoc-jar'
-    apply plugin: 'nebula.dependency-lock'
+    apply plugin: 'com.netflix.nebula.javadoc-jar'
+    apply plugin: 'com.netflix.nebula.dependency-lock'
     apply plugin: 'me.champeau.jmh'
     apply plugin: 'org.openrewrite.rewrite'
 
@@ -65,7 +64,9 @@ subprojects {
     ext {
         libraries = [
                 guava: "com.google.guava:guava:31.1-jre",
+                okhttp: 'com.squareup.okhttp3:okhttp:4.10.0',
                 jupiterApi: 'org.junit.jupiter:junit-jupiter-api:5.+',
+                jupiterParams: 'org.junit.jupiter:junit-jupiter-params:5.+',
                 jupiterEngine: 'org.junit.jupiter:junit-jupiter-engine:5.+',
                 jupiterMockito: 'org.mockito:mockito-junit-jupiter:4.+',
                 mockito: 'org.mockito:mockito-core:4.+',
@@ -76,16 +77,18 @@ subprojects {
     }
 
     test {
+        useJUnitPlatform()
         testLogging {
             showStandardStreams = true
         }
     }
 }
+
 dependencies {
-    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:1.10.0"))
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:1.11.0"))
     rewrite("org.openrewrite.recipe:rewrite-testing-frameworks")
 }
-
 rewrite {
+    failOnDryRunResults = true
     activeRecipe("org.openrewrite.java.testing.junit5.JUnit5BestPractices")
 }
